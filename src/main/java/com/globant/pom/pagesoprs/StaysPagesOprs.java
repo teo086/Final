@@ -1,12 +1,16 @@
 package com.globant.pom.pagesoprs;
 
 import com.globant.pom.pagesobj.StaysPageObj;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StaysPagesOprs extends StaysPageObj {
     WebDriver driver;
@@ -21,11 +25,11 @@ public class StaysPagesOprs extends StaysPageObj {
     }
     public void offerSearch(){
         /**
-         *  select the box where you'll put the destination
+         *  click on the box where you'll put the destination
          */
         driver.findElement(inputDestination).click();
         /**
-         * clean the searchbox
+         * clean the box
          */
         driver.findElement(inputDestination).clear();
         /**
@@ -45,12 +49,11 @@ public class StaysPagesOprs extends StaysPageObj {
         /**
          * click plus one adult for a total of three adults
          */
-        wait.until(ExpectedConditions.elementToBeClickable(adultsSelect));
 
         driver.findElement(adultsSelect).click();
 
         /**
-         * clean the box
+         * click plus one child for a total of one child
          */
         driver.findElement(childrenSelect).click();
         /**
@@ -68,24 +71,36 @@ public class StaysPagesOprs extends StaysPageObj {
         /**
          * click on the 'five stars' filter
          */
-        driver.findElement(fiveStarsFilter).click();
-        //1ras verificaciones -> titulo, score y precio (3 localizadores)
 
+        driver.findElement(fiveStarsFilter).click();
+        wait.until(ExpectedConditions.elementToBeClickable(fiveStarsFilter));
+
+        //1ras verificaciones -> titulo, score y precio (3 localizadores)
         /**
          * click on the second hotel
          */
-        driver.findElement(secondHotel).click();
+        /*String title = driver.findElement(By.xpath("//*[@id=\"search_results_table\"]/div[1]/div/div/div/div[5]/div[5]/div[1]/div[2]/div/div[1]/div/div[1]/div/div[1]/div/h3/a/div[1]")).getText();
+        String score = driver.findElement(By.xpath("//*[@id=\"search_results_table\"]/div[1]/div/div/div/div[5]/div[5]/div[1]/div[2]/div/div[1]/div/div[2]/div/div/div/div/a/span/div/div[1]")).getText();
+        String price = driver.findElement(By.xpath("//*[@id=\"search_results_table\"]/div[1]/div/div/div/div[5]/div[5]/div[1]/div[2]/div/div[3]/div/div[2]/div/div[1]/div/div/div/div/div[2]/span")).getText();
+        System.out.println(title+" "+score+" "+price);*/
+
+        selectSecondElement();
+
         /**
          * ??verify parameters of booking
          */
-        //2das verificaciones -> number of adults and childs are the same as the previous page ALSO PRICE.
+        //2das verificaciones -> number of adults and childs are the same as the previous page ALSO PRICE.(1 localizador)
         /**
          * start the reserve process
          */
+        wait.until(ExpectedConditions.alertIsPresent());
+
         driver.findElement(startReservationBtn).click();
         /**
          * finalize the reserve process
          */
+        wait.until(ExpectedConditions.alertIsPresent());
+
         driver.findElement(finalReservationBtn).click();
         /**
          * set the purpose the trip
@@ -146,12 +161,14 @@ public class StaysPagesOprs extends StaysPageObj {
         /**
          * go to the last data information form (star the reservation process)
          */
+        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(searchBtn));
+
         driver.findElement(bookForm).click();
         /**
          * click on country selection box
          */
         driver.findElement(countrySelection).click();
-        // aki en el fljo yo no hice nada xq ya estaba 'colombia' la  alt seria add:
+        // aki yo no hice nada xq ya estaba 'colombia' la  alt seria add:
         //new Select(driver.findElement(countrySelection)).selectByVisibleText("colombia");
 
         /**
@@ -171,7 +188,6 @@ public class StaysPagesOprs extends StaysPageObj {
          * click on type of credit card box
          */
         driver.findElement(chooseCreditCardBox).click();
-        //? si kito new, sale 'method call expected
         new Select(driver.findElement(chooseCreditCardBox)).selectByVisibleText("MasterCard");
         /**
          * click on credit card number box
@@ -189,13 +205,11 @@ public class StaysPagesOprs extends StaysPageObj {
          * click month of your caducity date of credit card
          */
         driver.findElement(chooseMonthForCaducityDateCc).click();
-        //? si kito new, sale 'method call expected
         new Select(driver.findElement(chooseMonthForCaducityDateCc)).selectByVisibleText("11 - nov");
         /**
          * click year of your caducity date of credit card
          */
         driver.findElement(chooseYearForCaducityDateCc).click();
-        //? si kito new, sale 'method call expected
         new Select(driver.findElement(chooseYearForCaducityDateCc)).selectByVisibleText("2038");
         /**
          * click on the CVC (Card Verification Code) box
@@ -214,21 +228,42 @@ public class StaysPagesOprs extends StaysPageObj {
          * finish the reservation process
          */
         driver.findElement(completeReserveForm).click();
-
-
     }
-    public void selectDates (String posteriorDays)
-    {
-        boolean isStillRunnin=true;
-        while (isStillRunnin)
+
+    /**
+     * set the dates a calendar input
+      * @param dates
+     */
+    private void selectDates (String dates){
+        boolean isStillRunning=true;
+        while (isStillRunning)
         {
             try {
-                this.driver.findElement(datePickerTds(posteriorDays)).click();
-                isStillRunnin=false;
+                this.driver.findElement(datePickerTds(dates)).click();
+                isStillRunning=false;
             }catch (Exception error)
             {
                 driver.findElement(dateField).click();
             }
+        }
+    }
+
+    public void verifyVisibility(){
+        String title = driver.findElement(By.xpath("//*[@id=\"search_results_table\"]/div[1]/div/div/div/div[5]/div[5]/div[1]/div[2]/div/div[1]/div/div[1]/div/div[1]/div/h3/a/div[1]")).getText();
+        String score = driver.findElement(By.xpath("//*[@id=\"search_results_table\"]/div[1]/div/div/div/div[5]/div[5]/div[1]/div[2]/div/div[1]/div/div[2]/div/div/div/div/a/span/div/div[1]")).getText();
+        String price = driver.findElement(By.xpath("//*[@id=\"search_results_table\"]/div[1]/div/div/div/div[5]/div[5]/div[1]/div[2]/div/div[3]/div/div[2]/div/div[1]/div/div/div/div/div[2]/span")).getText();
+        System.out.println(title+" "+score+" "+price);
+    }
+
+    private void selectSecondElement(){
+        List<WebElement> titleList = driver.findElements(secondHotel);
+        int count = 1;
+        for (WebElement title:titleList){
+            if(count==2){
+                title.click();
+                break;
+            }
+            count++;
         }
     }
 

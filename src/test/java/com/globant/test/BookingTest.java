@@ -30,9 +30,9 @@ public class BookingTest {
 
 
 
-    @AfterTest
+    /* @AfterTest
     public void tearDown() {
         driver.quit();
-    }
+    } */
 
 }
